@@ -1,0 +1,15 @@
+NUM_REQUESTS = 10000      # número de sequências de comandos SMTP
+USE_SESSION = False       # usa uma única conexão (True) ou uma nova conexão para cada requisição (False)
+PRINT_OUTPUT = True       # imprime resultados no console
+WRITE_TO_FILE = True      # grava resultados em arquivo
+PRINT_REQUESTS = True     # imprime cada requisição no console
+
+UDP caso: uma nova conexão para cada requisição, printando na tela, escrevendo no arquivo
+
+
+Resultados para 10000 sequências de comandos SMTP no servidor UDP:
+Tempo médio: 0.001221 segundos
+Mediana: 0.000580 segundos
+Desvio padrão: 0.006799 segundos
+Tempo mínimo: 0.000089 segundos
+Tempo máximo: 0.606793 segundos

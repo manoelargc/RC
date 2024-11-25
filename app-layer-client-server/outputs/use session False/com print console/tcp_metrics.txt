@@ -1,0 +1,15 @@
+NUM_REQUESTS = 10000      # número de sequências de comandos SMTP
+USE_SESSION = False       # usa uma única conexão (True) ou uma nova conexão para cada requisição (False)
+PRINT_OUTPUT = True       # imprime resultados no console
+WRITE_TO_FILE = True      # grava resultados em arquivo
+PRINT_REQUESTS = True     # imprime cada requisição no console
+
+TCP caso: uma nova conexão para cada requisição, printando na tela, escrevendo no arquivo
+
+
+Resultados para 10000 sequências de comandos SMTP no servidor TCP:
+Tempo médio: 0.000637 segundos
+Mediana: 0.000172 segundos
+Desvio padrão: 0.006460 segundos
+Tempo mínimo: 0.000020 segundos
+Tempo máximo: 0.413088 segundos

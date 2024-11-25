@@ -1,0 +1,6 @@
+Resultados para 100000 sequências de comandos SMTP no servidor TCP:
+Tempo médio: 0.000244 segundos
+Mediana: 0.000188 segundos
+Desvio padrão: 0.000754 segundos
+Tempo mínimo: 0.000032 segundos
+Tempo máximo: 0.026433 segundos

@@ -1,0 +1,41 @@
+version: '3'
+services:
+  server_tcp:
+    build: ./tcp/server
+    container_name: tcp_server
+    ports:
+      - "587:587"
+
+  client_tcp:
+    build: ./tcp/client
+    container_name: tcp_client
+    depends_on:
+      - server_tcp
+    stdin_open: true
+    tty: true
+    environment:
+      - SERVER_HOST=server_tcp
+      - OUTPUT_FILENAME=docker_tcp_metrics.csv
+      - IS_DOCKER=true  # Indica que está sendo executado no Docker
+    volumes:
+      - ./outputs:/app/outputs
+
+  server_udp:
+    build: ./udp/server
+    container_name: udp_server
+    ports:
+      - "25:25"
+
+  client_udp:
+    build: ./udp/client
+    container_name: udp_client
+    depends_on:
+      - server_udp
+    stdin_open: true
+    tty: true
+    environment:
+      - SERVER_HOST=server_udp
+      - OUTPUT_FILENAME=docker_udp_metrics.csv
+      - IS_DOCKER=true  # Indica que está sendo executado no Docker
+    volumes:
+      - ./outputs:/app/outputs

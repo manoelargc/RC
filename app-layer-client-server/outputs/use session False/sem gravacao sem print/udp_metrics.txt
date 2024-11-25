@@ -1,0 +1,9 @@
+TCP caso: uma nova conexão para cada requisição, sem printar na tela, sem gravar arquivo
+
+
+udp_client  | Resultados para 10000 sequências de comandos SMTP no servidor UDP:
+udp_client  | Tempo médio: 0.000820 segundos
+udp_client  | Mediana: 0.000679 segundos                                                                                                                                          
+udp_client  | Desvio padrão: 0.002969 segundos                                                                                                                                    
+udp_client  | Tempo mínimo: 0.000177 segundos                                                                                                                                     
+udp_client  | Tempo máximo: 0.499795 segundos             
