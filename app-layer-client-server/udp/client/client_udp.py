@@ -5,7 +5,7 @@ import csv
 import os
 
 SERVER_HOST = os.getenv("SERVER_HOST", "localhost")
-OUTPUT_DIR = "/app/outputs"  # Diretório para salvar os resultados no contêiner
+OUTPUT_DIR = os.path.abspath("./outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)  # Garante que o diretório existe
 IS_DOCKER = os.getenv("IS_DOCKER", "false").lower() == "true"  # Verifica se está sendo executado no Docker
 
@@ -59,73 +59,42 @@ def calculate_metrics(times):
     max_time = max(times)
     return avg_time, median_time, std_dev_time, min_time, max_time
 
-
-def save_metrics(metrics, filename):
-    avg_time, median_time, std_dev_time, min_time, max_time = metrics
-    with open(filename, "w") as file:
-        file.write(f"Resultados para {NUM_REQUESTS} sequências de comandos SMTP no servidor UDP:\n")
-        file.write(f"Tempo médio: {avg_time:.2f} µs\n")
-        file.write(f"Mediana: {median_time:.2f} µs\n")
-        file.write(f"Desvio padrão: {std_dev_time:.2f} µs\n")
-        file.write(f"Tempo mínimo: {min_time:.2f} µs\n")
-        file.write(f"Tempo máximo: {max_time:.2f} µs\n")
-
-
-def save_metrics_to_csv(metrics, filename=None):
-    if filename is None:
-        filename = OUTPUT_FILENAME
+def save_all_metrics_to_csv(all_metrics, filename):
     filepath = os.path.join(OUTPUT_DIR, filename)
-    avg_time, median_time, std_dev_time, min_time, max_time = metrics
-    with open(filename, mode="w", newline="") as file:
+    with open(filepath, mode="w", newline="") as file:
         writer = csv.writer(file)
-        # Escreve o cabeçalho
-        writer.writerow(["Tipo", "Tempo (µs)"])
-        # Escreve os tempos individuais
-        # Escreve as métricas
-        writer.writerow(["Média", avg_time])
-        writer.writerow(["Mediana", median_time])
-        writer.writerow(["Desvio Padrão", std_dev_time])
-        writer.writerow(["Mínimo", min_time])
-        writer.writerow(["Máximo", max_time])
-
+        writer.writerow(["Execução", "Média (µs)", "Mediana (µs)", "Desvio Padrão (µs)", "Mínimo (µs)", "Máximo (µs)"])
+        for i, metrics in enumerate(all_metrics, start=1):
+            writer.writerow([i] + [f"{value:.2f}" for value in metrics])
+    print(f"Métricas de todas as execuções salvas em: {filepath}")
 
 def udp_client():
-    times = run_requests()
-    metrics = calculate_metrics(times)
+    all_metrics = []
+    for i in range(10):  # Executa 10 vezes
+        print(f"Executando {i+1}/10...")
+        times = run_requests()
+        metrics = calculate_metrics(times)
+        all_metrics.append(metrics)
 
-    avg_time, median_time, std_dev_time, min_time, max_time = metrics
+        avg_time, median_time, std_dev_time, min_time, max_time = metrics
+        if PRINT_OUTPUT:
+            print(f"Execução {i+1}:")
+            print(f"  Tempo médio: {avg_time:.2f} µs")
+            print(f"  Mediana: {median_time:.2f} µs")
+            print(f"  Desvio padrão: {std_dev_time:.2f} µs")
+            print(f"  Tempo mínimo: {min_time:.2f} µs")
+            print(f"  Tempo máximo: {max_time:.2f} µs")
 
-    if PRINT_OUTPUT:
-        print(f"Resultados para {NUM_REQUESTS} sequências de comandos SMTP no servidor UDP:")
-        print(f"Tempo médio: {avg_time:.2f} µs")
-        print(f"Mediana: {median_time:.2f} µs")
-        print(f"Desvio padrão: {std_dev_time:.2f} µs")
-        print(f"Tempo mínimo: {min_time:.2f} µs")
-        print(f"Tempo máximo: {max_time:.2f} µs")
-
-    # Salvar resultados em arquivos
     if WRITE_TO_FILE:
-        # Salvar métricas em arquivo de texto
-        filename = "udp_metrics.txt"
-        save_metrics(metrics, filename)
-        
         option = input("Deseja especificar o nome do arquivo para salvar os resultados? (y/n): ").strip().lower()
         if option == 'y':
             filename = input("Digite o nome do arquivo (com extensão .csv): ").strip()
             if not filename.endswith(".csv"):
                 filename += ".csv"
         else:
-            if IS_DOCKER:
-                filename = OUTPUT_FILENAME  # Nome definido no Docker
-            else:
-                filename = "udp_results.csv"  # Nome padrão fora do Docker
+            filename = "udp_all_metrics.csv" if not IS_DOCKER else "docker_udp_all_metrics.csv"
 
-
-        save_metrics_to_csv(metrics, filename)
-        print(f"Métricas salvas em: {filename}")
-
-
-
+        save_all_metrics_to_csv(all_metrics, filename)
 
 if __name__ == "__main__":
     udp_client()
