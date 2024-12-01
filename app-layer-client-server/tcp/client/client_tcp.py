@@ -15,8 +15,8 @@ IS_DOCKER = os.getenv("IS_DOCKER", "false").lower() == "true"  # Verifica se est
 # SERVER_HOST = 'localhost'  # Certifique-se de usar 'localhost' ou o IP correto
 SERVER_PORT = 587
 NUM_REQUESTS = 1000      # número de sequências de comandos SMTP
-USE_SESSION = os.getenv("USE_SESSION", "false").lower() == "true"
-PRINT_OUTPUT = os.getenv("PRINT_OUTPUT", "true").lower() == "true"
+USE_SESSION = os.getenv("USE_SESSION", "true").lower() == "true" #se false, é uma conexao pra cada comando
+PRINT_OUTPUT = os.getenv("PRINT_OUTPUT", "false").lower() == "true"
 WRITE_TO_FILE = os.getenv("WRITE_TO_FILE", "true").lower() == "true"
 
 
@@ -44,7 +44,7 @@ def execute_command_sequence(client_socket, commands):
     for command in commands:
         time_elapsed = measure_execution_time(communicate_with_server, client_socket, command)
         times.append(time_elapsed)
-        time.sleep(0.01)  #PARA DOCKER
+        # time.sleep(0.01)  #PARA DOCKER
 
     return times
 
@@ -76,18 +76,52 @@ def calculate_metrics(times):
     max_time = max(times)
     return avg_time, median_time, std_dev_time, min_time, max_time
 
-def save_all_metrics_to_csv(all_metrics, filename):
+# salva as metricas no arquivo CSV com configuracoes no topo
+def save_all_metrics_to_csv(all_metrics, config):
+    """
+    Salva métricas no arquivo CSV com uma linha no topo descrevendo as configurações.
+    """
+    # cria o nome do arquivo com base nas configuracoes
+    filename = f"{config['protocol']}_results_" \
+               f"{'session' if config['use_session'] else 'nosession'}_" \
+               f"{'print' if config['print_output'] else 'noprint'}_" \
+               f"{'write' if config['write_to_file'] else 'nowrite'}.csv"
+
     filepath = os.path.join(OUTPUT_DIR, filename)
+
     with open(filepath, mode="w", newline="") as file:
         writer = csv.writer(file)
+        
+        # escreve as configuracoes no topo do arquivo
+        writer.writerow([f"# Configurações: SERVER_HOST={SERVER_HOST}, "
+                         f"USE_SESSION={config['use_session']}, "
+                         f"PRINT_OUTPUT={config['print_output']}, "
+                         f"WRITE_TO_FILE={config['write_to_file']}"])
+        
+        # escreve o cabecalho das metricas
         writer.writerow(["Execução", "Média (µs)", "Mediana (µs)", "Desvio Padrão (µs)", "Mínimo (µs)", "Máximo (µs)"])
+        
+        # escreve as metricas de cada execucao
         for i, metrics in enumerate(all_metrics, start=1):
             writer.writerow([i] + [f"{value:.2f}" for value in metrics])
+    
     print(f"Métricas de todas as execuções salvas em: {filepath}")
 
+# funcao principal para executar o cliente TCP
 def tcp_client():
+    """
+    Executa 10 vezes a configuração atual e salva um único arquivo CSV.
+    """
+    # configurações atuais
+    config = {
+        "protocol": "tcp",
+        "use_session": USE_SESSION,
+        "print_output": PRINT_OUTPUT,
+        "write_to_file": WRITE_TO_FILE
+    }
+
     all_metrics = []
-    for i in range(10):  # Executa 10 vezes
+    for i in range(10):  # executa 10 vezes
         print(f"Executando {i+1}/10...")
         times = run_requests()
         metrics = calculate_metrics(times)
@@ -101,16 +135,9 @@ def tcp_client():
         print(f"  Tempo mínimo: {min_time:.2f} µs")
         print(f"  Tempo máximo: {max_time:.2f} µs")
 
+    # salva os resultados automaticamente no arquivo CSV
     if WRITE_TO_FILE:
-        option = input("Deseja especificar o nome do arquivo para salvar os resultados? (y/n): ").strip().lower()
-        if option == 'y':
-            filename = input("Digite o nome do arquivo (com extensão .csv): ").strip()
-            if not filename.endswith(".csv"):
-                filename += ".csv"
-        else:
-            filename = "tcp_all_metrics.csv" if not IS_DOCKER else "docker_tcp_all_metrics.csv"
-
-        save_all_metrics_to_csv(all_metrics, filename)
+        save_all_metrics_to_csv(all_metrics, config)
 
 if __name__ == "__main__":
     tcp_client()
