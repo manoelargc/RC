@@ -10,7 +10,7 @@ OUTPUT_DIR = os.path.abspath("./outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)  # garante que o diretorio existe
 IS_DOCKER = os.getenv("IS_DOCKER", "false").lower() == "true"  # verifica se esta sendo executado no Docker
 SERVER_PORT = 25
-NUM_REQUESTS = 1000  # numero de sequencias de comandos SMTP
+NUM_REQUESTS = 25000  # numero de sequencias de comandos SMTP
 PRINT_OUTPUT = os.getenv("PRINT_OUTPUT", "false").lower() == "true"
 WRITE_TO_FILE = os.getenv("WRITE_TO_FILE", "true").lower() == "true"
 

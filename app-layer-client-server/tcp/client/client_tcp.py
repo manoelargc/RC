@@ -14,7 +14,7 @@ IS_DOCKER = os.getenv("IS_DOCKER", "false").lower() == "true"  # Verifica se est
 # SERVER_HOST = 'server_tcp'
 # SERVER_HOST = 'localhost'  # Certifique-se de usar 'localhost' ou o IP correto
 SERVER_PORT = 587
-NUM_REQUESTS = 1000      # número de sequências de comandos SMTP
+NUM_REQUESTS = 25000      # número de sequências de comandos SMTP
 USE_SESSION = os.getenv("USE_SESSION", "true").lower() == "true" #se false, é uma conexao pra cada comando
 PRINT_OUTPUT = os.getenv("PRINT_OUTPUT", "false").lower() == "true"
 WRITE_TO_FILE = os.getenv("WRITE_TO_FILE", "true").lower() == "true"
