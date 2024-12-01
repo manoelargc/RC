@@ -16,13 +16,11 @@ services:
     environment:
       - SERVER_HOST=server_tcp
       - IS_DOCKER=true
-      - USE_SESSION=${USE_SESSION:-false}
-      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}
-      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}
-      - OUTPUT_FILENAME=/app/outputs/docker_tcp_metrics.csv
+      - USE_SESSION=${USE_SESSION:-false}  # Variável para usar sessão
+      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}  # Variável para salvar resultados em arquivo
+      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}  # Variável para imprimir no terminal
     volumes:
       - ./outputs:/app/outputs
-
 
   # Servidor UDP
   server_udp:
@@ -40,8 +38,7 @@ services:
     environment:
       - SERVER_HOST=server_udp
       - IS_DOCKER=true
-      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}
-      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}
-      - OUTPUT_FILENAME=/app/outputs/docker_udp_metrics.csv
+      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}  # Variável para salvar resultados em arquivo
+      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}  # Variável para imprimir no terminal
     volumes:
       - ./outputs:/app/outputs
