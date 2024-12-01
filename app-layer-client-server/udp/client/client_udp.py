@@ -10,7 +10,7 @@ OUTPUT_DIR = os.path.abspath("./outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)  # Garante que o diretório existe
 IS_DOCKER = os.getenv("IS_DOCKER", "false").lower() == "true"
 SERVER_PORT = 25
-NUM_REQUESTS = 10  # Número de sequências de comandos SMTP
+NUM_REQUESTS = 25000  # Número de sequências de comandos SMTP
 PRINT_OUTPUT = os.getenv("PRINT_OUTPUT", "false").lower() == "true"
 WRITE_TO_FILE = os.getenv("WRITE_TO_FILE", "true").lower() == "true"  # Mantido para o nome e cabeçalho
 filepath = OUTPUT_DIR  # Diretório base para saída
