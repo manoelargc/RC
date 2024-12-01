@@ -1,41 +1,44 @@
 version: '3'
 services:
+  # Servidor TCP
   server_tcp:
     build: ./tcp/server
     container_name: tcp_server
     ports:
       - "587:587"
 
+  # Cliente TCP
   client_tcp:
     build: ./tcp/client
     container_name: tcp_client
     depends_on:
       - server_tcp
-    stdin_open: true
-    tty: true
     environment:
       - SERVER_HOST=server_tcp
-      - OUTPUT_FILENAME=docker_tcp_metrics.csv
-      - IS_DOCKER=true  # Indica que está sendo executado no Docker
+      - IS_DOCKER=true
+      - USE_SESSION=${USE_SESSION:-false}  # Variável para usar sessão
+      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}  # Variável para salvar resultados em arquivo
+      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}  # Variável para imprimir no terminal
     volumes:
       - ./outputs:/app/outputs
 
+  # Servidor UDP
   server_udp:
     build: ./udp/server
     container_name: udp_server
     ports:
       - "25:25"
 
+  # Cliente UDP
   client_udp:
     build: ./udp/client
     container_name: udp_client
     depends_on:
       - server_udp
-    stdin_open: true
-    tty: true
     environment:
       - SERVER_HOST=server_udp
-      - OUTPUT_FILENAME=docker_udp_metrics.csv
-      - IS_DOCKER=true  # Indica que está sendo executado no Docker
+      - IS_DOCKER=true
+      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}  # Variável para salvar resultados em arquivo
+      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}  # Variável para imprimir no terminal
     volumes:
       - ./outputs:/app/outputs

@@ -1,6 +1,0 @@
-Resultados para 10000 sequências de comandos SMTP no servidor UDP:
-Tempo médio: 0.000718 segundos
-Mediana: 0.000554 segundos
-Desvio padrão: 0.001254 segundos
-Tempo mínimo: 0.000154 segundos
-Tempo máximo: 0.093802 segundos
