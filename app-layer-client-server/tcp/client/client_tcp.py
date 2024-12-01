@@ -15,10 +15,10 @@ IS_DOCKER = os.getenv("IS_DOCKER", "false").lower() == "true"  # Verifica se est
 # SERVER_HOST = 'localhost'  # Certifique-se de usar 'localhost' ou o IP correto
 SERVER_PORT = 587
 NUM_REQUESTS = 1000      # número de sequências de comandos SMTP
-USE_SESSION = False       # usa uma única conexão (True) ou uma nova conexão para cada requisição (False)
-PRINT_OUTPUT = True      # imprime resultados no console
-WRITE_TO_FILE = True     # grava resultados em arquivo
-PRINT_REQUESTS = False   # imprime cada requisição no console
+USE_SESSION = os.getenv("USE_SESSION", "false").lower() == "true"
+PRINT_OUTPUT = os.getenv("PRINT_OUTPUT", "true").lower() == "true"
+WRITE_TO_FILE = os.getenv("WRITE_TO_FILE", "true").lower() == "true"
+
 
 
 def connect_to_server():
@@ -29,7 +29,7 @@ def connect_to_server():
 def communicate_with_server(client_socket, command):
     client_socket.sendall(command.encode())
     response = client_socket.recv(1024)
-    if PRINT_REQUESTS:
+    if PRINT_OUTPUT:
         print(f"Enviado: {command}")
     return response.decode()
 
@@ -94,13 +94,12 @@ def tcp_client():
         all_metrics.append(metrics)
 
         avg_time, median_time, std_dev_time, min_time, max_time = metrics
-        if PRINT_OUTPUT:
-            print(f"Execução {i+1}:")
-            print(f"  Tempo médio: {avg_time:.2f} µs")
-            print(f"  Mediana: {median_time:.2f} µs")
-            print(f"  Desvio padrão: {std_dev_time:.2f} µs")
-            print(f"  Tempo mínimo: {min_time:.2f} µs")
-            print(f"  Tempo máximo: {max_time:.2f} µs")
+        print(f"Execução {i+1}:")
+        print(f"  Tempo médio: {avg_time:.2f} µs")
+        print(f"  Mediana: {median_time:.2f} µs")
+        print(f"  Desvio padrão: {std_dev_time:.2f} µs")
+        print(f"  Tempo mínimo: {min_time:.2f} µs")
+        print(f"  Tempo máximo: {max_time:.2f} µs")
 
     if WRITE_TO_FILE:
         option = input("Deseja especificar o nome do arquivo para salvar os resultados? (y/n): ").strip().lower()
