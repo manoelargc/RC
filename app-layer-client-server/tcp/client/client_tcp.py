@@ -77,47 +77,33 @@ def calculate_metrics(times):
     return avg_time, median_time, std_dev_time, min_time, max_time
 
 # salva as metricas no arquivo CSV com configuracoes no topo
-def save_all_metrics_to_csv(all_metrics, config):
-    """
-    Salva métricas no arquivo CSV com uma linha no topo descrevendo as configurações.
-    """
-    # cria o nome do arquivo com base nas configuracoes
-    filename = f"{config['protocol']}_results_" \
-               f"{'session' if config['use_session'] else 'nosession'}_" \
-               f"{'print' if config['print_output'] else 'noprint'}_" \
-               f"{'write' if config['write_to_file'] else 'nowrite'}.csv"
-
-    filepath = os.path.join(OUTPUT_DIR, filename)
-
+def save_all_metrics_to_csv(all_metrics, config, filename):
+    filepath = os.path.abspath(filename)
     with open(filepath, mode="w", newline="") as file:
         writer = csv.writer(file)
         
         # escreve as configuracoes no topo do arquivo
-        writer.writerow([f"# Configurações: SERVER_HOST={SERVER_HOST}, "
-                         f"USE_SESSION={config['use_session']}, "
+        writer.writerow([f"# Configurações: PROTOCOLO={config['protocol']}, "
+                         f"SESSÃO={config.get('use_session', 'n/a')}, "
                          f"PRINT_OUTPUT={config['print_output']}, "
                          f"WRITE_TO_FILE={config['write_to_file']}"])
         
-        # escreve o cabecalho das metricas
+        # escreve o cabeçalho das métricas
         writer.writerow(["Execução", "Média (µs)", "Mediana (µs)", "Desvio Padrão (µs)", "Mínimo (µs)", "Máximo (µs)"])
         
-        # escreve as metricas de cada execucao
+        # escreve as métricas de cada execução
         for i, metrics in enumerate(all_metrics, start=1):
             writer.writerow([i] + [f"{value:.2f}" for value in metrics])
     
-    print(f"Métricas de todas as execuções salvas em: {filepath}")
+    print(f"Métricas salvas em: {filepath}")
 
 # funcao principal para executar o cliente TCP
 def tcp_client():
-    """
-    Executa 10 vezes a configuração atual e salva um único arquivo CSV.
-    """
-    # configurações atuais
     config = {
         "protocol": "tcp",
-        "use_session": USE_SESSION,
         "print_output": PRINT_OUTPUT,
-        "write_to_file": WRITE_TO_FILE
+        "write_to_file": WRITE_TO_FILE,
+        "use_session": USE_SESSION
     }
 
     all_metrics = []
@@ -135,9 +121,9 @@ def tcp_client():
         print(f"  Tempo mínimo: {min_time:.2f} µs")
         print(f"  Tempo máximo: {max_time:.2f} µs")
 
-    # salva os resultados automaticamente no arquivo CSV
-    if WRITE_TO_FILE:
-        save_all_metrics_to_csv(all_metrics, config)
+    # sempre grava os resultados no CSV
+    filename = os.getenv("OUTPUT_FILENAME", "tcp_metrics.csv")
+    save_all_metrics_to_csv(all_metrics, config, filename)
 
 if __name__ == "__main__":
     tcp_client()

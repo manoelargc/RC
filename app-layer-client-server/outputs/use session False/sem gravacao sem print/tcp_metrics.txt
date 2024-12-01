@@ -1,9 +1,0 @@
-TCP caso: uma nova conexão para cada requisição, sem printar na tela, sem gravar arquivo
-
-
-tcp_client  | Resultados para 10000 sequências de comandos SMTP no servidor TCP:
-tcp_client  | Tempo médio: 0.000316 segundos
-tcp_client  | Mediana: 0.000187 segundos                                                                                                                                          
-tcp_client  | Desvio padrão: 0.001586 segundos                                                                                                                                    
-tcp_client  | Tempo mínimo: 0.000026 segundos                                                                                                                                     
-tcp_client  | Tempo máximo: 0.255175 segundos               
