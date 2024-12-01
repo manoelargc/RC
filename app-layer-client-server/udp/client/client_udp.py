@@ -10,9 +10,11 @@ OUTPUT_DIR = os.path.abspath("./outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)  # garante que o diretorio existe
 IS_DOCKER = os.getenv("IS_DOCKER", "false").lower() == "true"  # verifica se esta sendo executado no Docker
 SERVER_PORT = 25
-NUM_REQUESTS = 25000  # numero de sequencias de comandos SMTP
+NUM_REQUESTS = 1000  # numero de sequencias de comandos SMTP
 PRINT_OUTPUT = os.getenv("PRINT_OUTPUT", "false").lower() == "true"
 WRITE_TO_FILE = os.getenv("WRITE_TO_FILE", "true").lower() == "true"
+OUTPUT_FILENAME = os.getenv("OUTPUT_FILENAME", "/app/outputs/docker_udp_metrics.csv")  # Ajustar o caminho para o volume
+filepath = OUTPUT_FILENAME
 
 # funcao para enviar e receber dados via UDP
 def communicate_with_server(client_socket, command):
@@ -60,23 +62,31 @@ def calculate_metrics(times):
 
 # salva as metricas no arquivo CSV com configuracoes no topo
 def save_all_metrics_to_csv(all_metrics, config, filename):
-    filepath = os.path.abspath(filename)
-    with open(filepath, mode="w", newline="") as file:
+    # Garante que o diretório do arquivo exista
+    dir_path = os.path.dirname(filename)
+    if not dir_path:
+        raise ValueError("O caminho do arquivo (OUTPUT_FILENAME) está vazio ou inválido.")
+    
+    os.makedirs(dir_path, exist_ok=True)  # Cria o diretório se não existir
+
+    # Salva as métricas no arquivo CSV
+    with open(filename, mode="w", newline="") as file:
         writer = csv.writer(file)
-        
-        # escreve as configuracoes no topo do arquivo
+
+        # Escreve as configurações no topo do arquivo
         writer.writerow([f"# Configurações: PROTOCOLO={config['protocol']}, "
+                         f"SESSÃO={config.get('use_session', 'n/a')}, "
                          f"PRINT_OUTPUT={config['print_output']}, "
                          f"WRITE_TO_FILE={config['write_to_file']}"])
-        
-        # escreve o cabeçalho das métricas
+
+        # Escreve o cabeçalho das métricas
         writer.writerow(["Execução", "Média (µs)", "Mediana (µs)", "Desvio Padrão (µs)", "Mínimo (µs)", "Máximo (µs)"])
-        
-        # escreve as métricas de cada execução
+
+        # Escreve as métricas de cada execução
         for i, metrics in enumerate(all_metrics, start=1):
             writer.writerow([i] + [f"{value:.2f}" for value in metrics])
-    
-    print(f"Métricas salvas em: {filepath}")
+
+    print(f"Métricas salvas em: {filename}")
 
 # funcao principal para executar o cliente UDP
 def udp_client():

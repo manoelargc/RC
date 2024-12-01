@@ -1,11 +1,13 @@
 version: '3'
 services:
+  # Servidor TCP
   server_tcp:
     build: ./tcp/server
     container_name: tcp_server
     ports:
       - "587:587"
 
+  # Cliente TCP
   client_tcp:
     build: ./tcp/client
     container_name: tcp_client
@@ -14,19 +16,22 @@ services:
     environment:
       - SERVER_HOST=server_tcp
       - IS_DOCKER=true
-      - USE_SESSION=${USE_SESSION:-false}  # Variável para usar sessão (definida no momento da execução)
-      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}  # Variável para salvar resultados em arquivo
-      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}  # Variável para imprimir no terminal
-      - OUTPUT_FILENAME=docker_tcp_metrics.csv  # Nome do arquivo de saída
+      - USE_SESSION=${USE_SESSION:-false}
+      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}
+      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}
+      - OUTPUT_FILENAME=/app/outputs/docker_tcp_metrics.csv
     volumes:
       - ./outputs:/app/outputs
 
+
+  # Servidor UDP
   server_udp:
     build: ./udp/server
     container_name: udp_server
     ports:
       - "25:25"
 
+  # Cliente UDP
   client_udp:
     build: ./udp/client
     container_name: udp_client
@@ -35,8 +40,8 @@ services:
     environment:
       - SERVER_HOST=server_udp
       - IS_DOCKER=true
-      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}  # Variável para salvar resultados em arquivo
-      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}  # Variável para imprimir no terminal
-      - OUTPUT_FILENAME=docker_udp_metrics.csv  # Nome do arquivo de saída
+      - WRITE_TO_FILE=${WRITE_TO_FILE:-true}
+      - PRINT_OUTPUT=${PRINT_OUTPUT:-false}
+      - OUTPUT_FILENAME=/app/outputs/docker_udp_metrics.csv
     volumes:
       - ./outputs:/app/outputs
