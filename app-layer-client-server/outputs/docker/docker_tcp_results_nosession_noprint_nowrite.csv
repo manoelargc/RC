@@ -1,4 +1,3 @@
-"# Configurações: PROTOCOLO=tcp, SESSÃO=False, PRINT_OUTPUT=False, WRITE_TO_FILE=False"
 Execução,Média (µs),Mediana (µs),Desvio Padrão (µs),Mínimo (µs),Máximo (µs)
 1,640.43,611.59,210.67,142.14,1943.77
 2,647.83,615.37,212.60,149.43,2070.51
